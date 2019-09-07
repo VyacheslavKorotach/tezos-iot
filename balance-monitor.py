@@ -85,7 +85,7 @@ def on_log(mosq, obj, level, string):
 
 
 def get_tezos_balance(account):
-    return 5
+    return pytezos.account(account)
 
 
 def is_json(myjson):
