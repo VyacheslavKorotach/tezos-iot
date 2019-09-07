@@ -85,7 +85,20 @@ def on_log(mosq, obj, level, string):
 
 
 def get_tezos_balance(account):
-    return pytezos.account(account)
+    json_string = ''
+    d = {}
+    msg = pytezos.account(account)
+    try:
+        json_string = msg.payload.decode('utf8')
+    except UnicodeDecodeError:
+        print("it was not a ascii-encoded unicode string")
+    #    if debug: print('json_string = ', json_string)
+    if json_string != '' and is_json(json_string):
+        d = json.loads(json_string)
+        if 'balance' in d.keys():
+            return d['balance']
+        else:
+            return 5  # fix to 0
 
 
 def is_json(myjson):
