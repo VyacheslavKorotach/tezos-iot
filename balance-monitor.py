@@ -113,5 +113,5 @@ time.sleep(1)
 
 while True:
     device_balance = get_tezos_balance(device0001_account)
-    if debug: print('device balance is: ' + device_balance)
+    if debug: print('device balance is: ' + str(device_balance))
     time.sleep(5)
