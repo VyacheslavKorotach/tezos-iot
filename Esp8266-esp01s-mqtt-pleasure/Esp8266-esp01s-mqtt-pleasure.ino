@@ -4,12 +4,14 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
-//#include <Ultrasonic.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
 #define ENGINE_PIN  0
-#define THERMO_PIN     2
+#define THERMO_PIN  2
 
-//Ultrasonic ultrasonic(TRIGGER_PIN, ECHO_PIN);
+OneWire oneWire(THERMO_PIN);
+DallasTemperature sensors(&oneWire);
 
 const char *topic_pub_state = "tezos-iot/hackathon/device0001/state";
 const char *topic_pub_event = "tezos-iot/hackathon/device0001/events";
@@ -24,20 +26,11 @@ const char *mqtt_user = "igor"; // Логи от сервер
 const char *mqtt_pass = "igor1315"; // Пароль от сервера
 const char *mqtt_device_id = "pleasure_device_0001";
 
+float high_temp = 27.0;
 int tm=300;
 bool pleasure_detected = false;
-// bool obstacles = false;
-// float detect_distance = 50.0;
-// int times_to_change = 5;
-// int times_to_change_g = times_to_change;
-
-// float cmMsec, inMsec;
-//long microsec = ultrasonic.timing();
-
-// String Customer_event = "No Customer";
-// int time1 = millis();
-// bool cust_stat = false;
-// int time3 = millis();
+String device_status = "Ready";
+int g_loop = 0;
 
 // Функция получения данных от сервера
 
@@ -58,11 +51,13 @@ void callback(const MQTT::Publish& pub)
       Serial.println("JSON parsing failed!");
       return;
     } else {
-//        Serial.println("Here we run some command if it needed.");
         int pleasure_time = root["pleasure_time"];
         digitalWrite(ENGINE_PIN, HIGH);
-        delay(pleasure_time * 1000);
-        digitalWrite(ENGINE_PIN, LOW);
+        device_status = "RUN";
+//        delay(pleasure_time * 1000);
+        g_loop = pleasure_time;
+//        tm = pleasure_time *333;
+//        digitalWrite(ENGINE_PIN, LOW);
     }
   }
 }
@@ -105,9 +100,7 @@ void loop() {
 
     if (client.connected()){
       client.loop();
-//      CustomerEventSend();
       ReadySend();
-      delay(2000);
     }  
   }
 } // конец основного цикла
@@ -117,22 +110,28 @@ void loop() {
 void ReadySend(){
   if (tm<=0)
   {
+//    digitalWrite(ENGINE_PIN, LOW);
     String ready_status = "Ready";
-//    String customer_status = "left";
-//    bool cust_stat_old = cust_stat;
-//    if (cmMsec <= detect_distance) {
-//      customer_status = "here";
-//      cust_stat = true;
-//    } else {
-//      cust_stat = false;
-//    }
-//    int time5 = millis();
-//    int duration = time5 - time3;
-//    if (cust_stat_old != cust_stat) {
-//      time3 = time5;
-//      duration = 0;
-//    }
-    client.publish(topic_pub_state, "{\"status\": \"" + ready_status + "\"" + "}");
+    sensors.requestTemperatures();   // от датчика получаем значение температуры
+    float temp = sensors.getTempCByIndex(0);
+    client.publish(topic_pub_event, String(temp)); // отправляем в топик для термодатчика значение температуры
+    Serial.println(temp);
+    if (temp >= high_temp) {
+      digitalWrite(ENGINE_PIN, LOW);
+      device_status = "Success! ;)))";
+    }
+    if ((g_loop > 0 ) and (device_status == "RUN"))  {
+      g_loop -= 1;
+    } else {
+ //     g_loop -= 1;
+      digitalWrite(ENGINE_PIN, LOW);
+      if ((g_loop > 0) and (device_status != "Success! ;)))")) {
+        device_status = "Fail :(";
+      } else {
+        device_status = "Ready";
+      }
+    }
+    client.publish(topic_pub_state, "{\"status\": \"" + device_status + "\", " + "\"temp\": " +String(temp) + "}");
     Serial.println(ready_status);
     tm = 300;  // пауза меду отправками признака готовности около 3 секунд
   }
