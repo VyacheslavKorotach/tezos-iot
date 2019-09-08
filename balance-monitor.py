@@ -137,6 +137,7 @@ while True:
         time.sleep(5)
     print(device_balance)
     print(old_balance)
-    print('give_pleasure_time is: ', device_balance - old_balance)
-    give_pleasure(device_balance - old_balance)
+    pleasure_time = int(device_balance) - int(old_balance)
+    print('give_pleasure_time is: ', pleasure_time)
+    give_pleasure(pleasure_time)
     old_balance = device_balance
