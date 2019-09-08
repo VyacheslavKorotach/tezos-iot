@@ -125,6 +125,7 @@ time.sleep(1)
 #device_balance = 0
 device_balance = get_tezos_balance(device0001_account)
 old_balance = device_balance
+print('old_balance is: ', old_balance)
 
 while True:
 
