@@ -13,10 +13,10 @@ tezos_endpoint = 'mainnet'
 mqtt_host = 'korotach.com'
 mqtt_user = 'igor'
 mqtt_password = 'igor1315'
-#device0001_account = 'tz1hs2Zf8uRhUxoTC4vwHL7Xk7k8KCfujHAY'
+# device0001_account = 'tz1hs2Zf8uRhUxoTC4vwHL7Xk7k8KCfujHAY'
 device0001_account = 'tz1Uuawvcr9HQDt8oWcrYdZkzgPqnA38FUD7'
 # active_privat_key = os.environ['DEVICE_ACCOUNT_PRIVAT_KEY']
-price = 0.001
+price = 888  # microtez
 state = 'Start'
 debug = True
 goods_number = 0
@@ -90,7 +90,7 @@ def get_tezos_balance(account):
     if 'balance' in msg.keys():
         return msg['balance']
     else:
-        return 5  # fix to 0
+        return 0  # fix to 0
 
 
 def is_json(myjson):
@@ -101,7 +101,7 @@ def is_json(myjson):
     return True
 
 
-def give_peasure(pleasure_time):
+def give_pleasure(pleasure_time):
     tst_start = int(time.time())
     mqttc.publish(topic_pub1, '{"pleasure_time": ' + str(pleasure_time) + ', "tst": ' + str(tst_start) + '}')
 
@@ -120,8 +120,14 @@ mqttc.connect(mqtt_host, 1883, 60)
 # mqttc.loop_forever()
 mqttc.loop_start()
 time.sleep(1)
+device_balance = get_tezos_balance(device0001_account)
+old_balance = device_balance
 
 while True:
-    device_balance = get_tezos_balance(device0001_account)
-    if debug: print('device balance is: ' + str(device_balance))
-    time.sleep(5)
+
+    while old_balance + price >= device_balance:
+        state = 'Waiting for transaction.'
+        device_balance = get_tezos_balance(device0001_account)
+        if debug: print('device balance is: ' + str(device_balance) + ' microtez.' + state)
+        time.sleep(5)
+    give_pleasure(5)
