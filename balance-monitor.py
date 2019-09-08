@@ -135,3 +135,4 @@ while True:
         if debug: print('device balance is: ' + str(device_balance) + ' microtez. ' + state)
         time.sleep(5)
     give_pleasure(5)
+    old_balance = device_balance
