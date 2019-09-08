@@ -103,7 +103,9 @@ def is_json(myjson):
 
 def give_pleasure(pleasure_time):
     tst_start = int(time.time())
+    if debug: print('pleasure time is: ', pleasure_time)
     mqttc.publish(topic_pub1, '{"pleasure_time": ' + str(pleasure_time) + ', "tst": ' + str(tst_start) + '}')
+    time.sleep(2)
 
 
 mqttc = mqtt.Client()
@@ -129,6 +131,6 @@ while True:
     while (int(old_balance) + int(price)) >= int(device_balance):
         state = 'Waiting for transaction.'
         device_balance = get_tezos_balance(device0001_account)
-        if debug: print('device balance is: ' + str(device_balance) + ' microtez.' + state)
+        if debug: print('device balance is: ' + str(device_balance) + ' microtez. ' + state)
         time.sleep(5)
     give_pleasure(5)
