@@ -131,6 +131,7 @@ while True:
     while (int(old_balance) + int(price)) >= int(device_balance):
         state = 'Waiting for transaction.'
         device_balance = get_tezos_balance(device0001_account)
+        print(device_balance, ' -- ', old_balance)
         if debug: print('device balance is: ' + str(device_balance) + ' microtez. ' + state)
         time.sleep(5)
     give_pleasure(5)
