@@ -20,6 +20,7 @@ price = 888  # microtez
 state = 'Start'
 debug = True
 goods_number = 0
+min_pleasure_time = 5
 
 
 def on_connect(mosq, obj, flags, rc):
@@ -135,9 +136,7 @@ while True:
         print(device_balance, ' -- ', old_balance)
         if debug: print('device balance is: ' + str(device_balance) + ' microtez. ' + state)
         time.sleep(5)
-    print(device_balance)
-    print(old_balance)
-    pleasure_time = int(device_balance) - int(old_balance)
+    pleasure_time = device_balance - old_balance - price + min_pleasure_time
     print('give_pleasure_time is: ', pleasure_time)
     give_pleasure(pleasure_time)
     old_balance = device_balance
