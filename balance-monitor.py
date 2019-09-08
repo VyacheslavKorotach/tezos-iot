@@ -120,13 +120,13 @@ mqttc.connect(mqtt_host, 1883, 60)
 # mqttc.loop_forever()
 mqttc.loop_start()
 time.sleep(1)
-device_balance = 0
+#device_balance = 0
 device_balance = get_tezos_balance(device0001_account)
 old_balance = device_balance
 
 while True:
 
-    while ((old_balance + price) >= device_balance):
+    while (int(old_balance) + int(price)) >= int(device_balance):
         state = 'Waiting for transaction.'
         device_balance = get_tezos_balance(device0001_account)
         if debug: print('device balance is: ' + str(device_balance) + ' microtez.' + state)
