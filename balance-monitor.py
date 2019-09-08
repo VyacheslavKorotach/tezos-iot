@@ -13,7 +13,8 @@ tezos_endpoint = 'mainnet'
 mqtt_host = 'korotach.com'
 mqtt_user = 'igor'
 mqtt_password = 'igor1315'
-device0001_account = 'tz1hs2Zf8uRhUxoTC4vwHL7Xk7k8KCfujHAY'
+#device0001_account = 'tz1hs2Zf8uRhUxoTC4vwHL7Xk7k8KCfujHAY'
+device0001_account = 'ooE6BP8vqncQB15w2jGaw1tfsXymGaQ8r4QKxkPfcjW619R1h4d'
 # active_privat_key = os.environ['DEVICE_ACCOUNT_PRIVAT_KEY']
 price = 0.001
 state = 'Start'
@@ -85,20 +86,7 @@ def on_log(mosq, obj, level, string):
 
 
 def get_tezos_balance(account):
-#    json_string = ''
-#    d = {}
     msg = pytezos.account(account)
-#    try:
-#        json_string = msg.payload.decode('utf8')
-#    except UnicodeDecodeError:
-#        print("it was not a ascii-encoded unicode string")
-#    #    if debug: print('json_string = ', json_string)
-#    if json_string != '' and is_json(json_string):
-#        d = json.loads(json_string)
-#        if 'balance' in d.keys():
-#            return d['balance']
-#        else:
-#            return 5  # fix to 0
     if 'balance' in msg.keys():
         return msg['balance']
     else:
@@ -111,6 +99,11 @@ def is_json(myjson):
     except ValueError:
         return False
     return True
+
+
+def give_peasure(pleasure_time):
+    tst_start = int(time.time())
+    mqttc.publish(topic_pub1, '{"pleasure_time": ' + str(pleasure_time) + ', "tst": ' + str(tst_start) + '}')
 
 
 mqttc = mqtt.Client()
