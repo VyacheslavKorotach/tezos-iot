@@ -88,7 +88,7 @@ def on_log(mosq, obj, level, string):
 def get_tezos_balance(account):
     msg = pytezos.account(account)
     if 'balance' in msg.keys():
-        return msg['balance']
+        return int(msg['balance'])
     else:
         return 0  # fix to 0
 
@@ -128,11 +128,11 @@ old_balance = device_balance
 
 while True:
 
-    while (int(old_balance) + int(price)) >= int(device_balance):
+    while (old_balance + price) >= device_balance:
         state = 'Waiting for transaction.'
         device_balance = get_tezos_balance(device0001_account)
         print(device_balance, ' -- ', old_balance)
         if debug: print('device balance is: ' + str(device_balance) + ' microtez. ' + state)
         time.sleep(5)
-    give_pleasure(int(device_balance) - int(old_balance))
+    give_pleasure(device_balance - old_balance)
     old_balance = device_balance
