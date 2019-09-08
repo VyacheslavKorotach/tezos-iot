@@ -134,5 +134,5 @@ while True:
         print(device_balance, ' -- ', old_balance)
         if debug: print('device balance is: ' + str(device_balance) + ' microtez. ' + state)
         time.sleep(5)
-    give_pleasure(device_balance - old_balance)
+    give_pleasure(int(device_balance) - int(old_balance))
     old_balance = device_balance
